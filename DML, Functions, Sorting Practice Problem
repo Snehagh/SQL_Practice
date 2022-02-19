@@ -1,0 +1,67 @@
+CREATE TABLE STUDENT
+(
+    studentid   VARCHAR2(10) primary key,
+    studentname VARCHAR2(20),
+    gender Char(1),
+    city VARCHAR2(20)
+);
+INSERT INTO STUDENT VALUES('S101','Xavier','M','Chennai');
+INSERT INTO STUDENT VALUES('S102','Nancy','F','Hyderabad');
+INSERT INTO STUDENT VALUES('S103','John','M','Pune');
+INSERT INTO STUDENT VALUES('S104','Isabelle','F','Hyderabad');
+INSERT INTO STUDENT VALUES('S105','Rahim','M','Pune');
+INSERT INTO STUDENT VALUES('S106','Kevin','M','Chennai');
+SELECT * FROM STUDENT;
+
+Create TABLE COURSE(
+courseid NUMBER PRIMARY KEY,
+coursename VARCHAR2(30),
+noofdays NUMBER
+);
+INSERT INTO COURSE VALUES(901,'Introduction  to Data Science',5);
+INSERT INTO COURSE VALUES(902,'Cyber Security',5);
+INSERT INTO COURSE VALUES(903,'DBMS Basics',3);
+INSERT INTO COURSE VALUES(904,'Basics of Networking',4);
+INSERT INTO COURSE VALUES(905,'Software Engineering',2);
+INSERT INTO COURSE VALUES(906,'Advance Python',6);
+SELECT * FROM COURSE;
+
+Create TABLE REGISTRATION
+(
+registerid int PRIMARY KEY,
+studentid varchar2(10),
+courseid int,
+FOREIGN KEY (studentid) REFERENCES student(studentid),
+FOREIGN KEY (courseid) REFERENCES COURSE(courseid),
+fee int,
+regdate date 
+);
+INSERT INTO REGISTRATION VALUES(801,'S102',906,1200,TO_DATE('11/08/2017','DD/MM/YYYY'));
+INSERT INTO REGISTRATION VALUES(802,'S103',901,2500,TO_DATE('14/08/2017','DD/MM/YYYY'));
+INSERT INTO REGISTRATION VALUES(803,'S101',902,3000,TO_DATE('18/06/2017','DD/MM/YYYY'));
+INSERT INTO REGISTRATION VALUES(804,'S102',901,2500,TO_DATE('21/08/2017','DD/MM/YYYY'));
+INSERT INTO REGISTRATION VALUES(805,'S103',903,1000,TO_DATE('04/06/2017','DD/MM/YYYY'));
+INSERT INTO REGISTRATION VALUES(806,'S104',905,1000,TO_DATE('16/08/2017','DD/MM/YYYY'));
+SELECT * FROM REGISTRATION;
+
+SELECT studentid,LOWER(studentname) studenmane ,gender FROM STUDENT WHERE LOWER(studentname) LIKE '%i%' AND (city='Hyderabad' OR city='Chennai' ) ORDER BY studentname ; /* Requirement 1*/
+
+SELECT courseid,coursename,noofdays,CONCAT(CONCAT(courseid,'-'),coursename) AS COURSEDETAILS  FROM COURSE WHERE LENgTH(coursename)>12 and noofdays>3; /* Requirement 2*/
+
+SELECT studentid, fee,
+CASE 
+   WHEN fee>2500 then 'Class A'
+   WHEN fee>=1500 and fee<=2500 then 'Class B' 
+   ELSE 'CLASS C'
+END Class
+FROM REGISTRATION ORDER BY fee ASC, regdate DESC; /* Requirement 3*/
+
+SELECT courseid FROM REGISTRATION WHERE fee>=1200 AND TO_CHAR(regdate,'MM')='08'; /*Requirement4*/
+
+SELECT courseid FROM REGISTRATION WHERE fee <2500; /* Requirement 5 */
+
+SELECT studentid,AVG(fee) FROM REGISTRATION GROUP BY studentid HAVING COUNT(studentid) > 1 AND AVG(fee)<1800; /* Requirement 6 */
+
+UPDATE COURSE SET noofdays =noofdays+1 WHERE courseid=902 OR courseid=904; /* Requirement 7 */
+
+DELETE FROM STUDENT S WHERE studentid NOT IN(SELECT studentid FROM REGISTRATION  ); /* Requirement 8 */
